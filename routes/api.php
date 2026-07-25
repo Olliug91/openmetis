@@ -20,9 +20,16 @@ Route::get('/context', function () {
     $files = File::allFiles($cerebroPath);
     
     foreach ($files as $file) {
+        $filename = $file->getFilename();
         $extension = $file->getExtension();
+        
+        // Ignorar los JSON gigantes de la UFC y el backup de n8n para no saturar los tokens
+        if (str_starts_with($filename, 'ufc_') || $filename === 'n8n_nexus_workflow.json') {
+            continue;
+        }
+
         if (in_array($extension, ['md', 'json'])) {
-            $prompt .= "--- Inicio de archivo: " . $file->getFilename() . " ---\n";
+            $prompt .= "--- Inicio de archivo: " . $filename . " ---\n";
             $prompt .= file_get_contents($file->getPathname()) . "\n";
             $prompt .= "--- Fin de archivo ---\n\n";
         }
