@@ -54,3 +54,16 @@ Route::post('/deploy', function (Request $request) {
 
     return response()->json(['status' => 'error', 'message' => 'El repositorio git no está inicializado en storage/app/cerebro'], 400);
 });
+
+Route::get('/ufc', function (Request $request) {
+    $fighter = $request->query('fighter');
+    if (!$fighter) {
+        return response()->json(['error' => 'Fighter name required'], 400);
+    }
+    
+    $scriptPath = storage_path('app/cerebro/scripts/consultar_ufc.py');
+    $command = "python3 " . escapeshellarg($scriptPath) . " " . escapeshellarg($fighter);
+    $output = shell_exec($command);
+    
+    return response($output)->header('Content-Type', 'text/plain');
+});
