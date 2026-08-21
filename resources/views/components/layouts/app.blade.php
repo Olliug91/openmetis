@@ -13,15 +13,22 @@
     <body class="bg-gray-100 text-gray-900 font-sans antialiased">
         <div class="min-h-screen flex">
             <!-- Sidebar -->
-            <div class="bg-slate-800 text-white w-64 flex-shrink-0">
-                <div class="p-6">
-                    <h1 class="text-2xl font-bold tracking-wider">🧠 OpenMetis</h1>
-                    <p class="text-slate-400 text-sm mt-1">AI Assistant</p>
+            <div class="bg-slate-800 text-white w-64 flex-shrink-0 flex flex-col justify-between">
+                <div>
+                    <div class="p-6">
+                        <h1 class="text-2xl font-bold tracking-wider">🧠 OpenMetis</h1>
+                        <p class="text-slate-400 text-sm mt-1">AI Assistant</p>
+                    </div>
+                    <nav class="mt-6">
+                        <a href="/" class="block py-3 px-6 text-slate-200 hover:bg-slate-700 hover:text-white transition">Dashboard</a>
+                        <a href="/config" class="block py-3 px-6 text-slate-200 hover:bg-slate-700 hover:text-white transition">Configuración</a>
+                    </nav>
                 </div>
-                <nav class="mt-6">
-                    <a href="/" class="block py-3 px-6 text-slate-200 hover:bg-slate-700 hover:text-white transition">Dashboard</a>
-                    <a href="/config" class="block py-3 px-6 text-slate-200 hover:bg-slate-700 hover:text-white transition">Configuración</a>
-                </nav>
+                <div class="p-4">
+                    <a href="/logout" class="block w-full text-center py-2 px-4 bg-slate-700 hover:bg-red-600 text-white rounded transition text-sm">
+                        Cerrar Sesión
+                    </a>
+                </div>
             </div>
 
             <!-- Main Content -->

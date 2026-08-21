@@ -41,6 +41,12 @@ class OpenMetisInstall extends Command
             default: storage_path('app/brain'),
             required: true
         );
+
+        $password = text(
+            label: 'Define una Contraseña Maestra para entrar al Panel Visual',
+            placeholder: 'Ej: 1234, admin, etc.',
+            required: true
+        );
         
         if (!file_exists($brainPath)) {
             if (confirm('La carpeta no existe. ¿Quieres que la cree por ti?', default: true)) {
@@ -52,6 +58,13 @@ class OpenMetisInstall extends Command
         // Reemplazar o añadir en el .env
         $envContent = preg_replace('/^API_BEARER_TOKEN=.*$/m', 'API_BEARER_TOKEN="' . $token . '"', $envContent);
         $envContent = preg_replace('/^BRAIN_PATH=.*$/m', 'BRAIN_PATH="' . $brainPath . '"', $envContent);
+        
+        if (str_contains($envContent, 'DASHBOARD_PASSWORD=')) {
+            $envContent = preg_replace('/^DASHBOARD_PASSWORD=.*$/m', 'DASHBOARD_PASSWORD="' . $password . '"', $envContent);
+        } else {
+            $envContent .= "\nDASHBOARD_PASSWORD=\"$password\"";
+        }
+        
         file_put_contents(base_path('.env'), $envContent);
 
         // 3. Crear SQLite si no existe
