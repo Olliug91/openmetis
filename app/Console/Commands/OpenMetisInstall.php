@@ -35,9 +35,18 @@ class OpenMetisInstall extends Command
             required: true
         );
 
+        $this->line("");
+        $this->line("<options=bold>📁 Configuración del Cerebro (Repositorio de Markdown)</>");
+        $this->line("Para mantener tu código y tus datos separados, OpenMetis AI necesita leer y escribir en");
+        $this->line("una carpeta externa. Lo ideal es que esta carpeta sea un repositorio Git (ej: clonado de Github).");
+        $this->line("Te recomendamos tenerlos como carpetas 'hermanas' en tu servidor:");
+        $this->line("  - /var/www/openmetis (Este proyecto)");
+        $this->line("  - /var/www/mi-cerebro-repo (Tus notas Markdown)");
+        $this->line("");
+
         $brainPath = text(
-            label: '¿En qué ruta absoluta de este servidor guardarás tus notas (Markdown)?',
-            placeholder: '/var/www/vhosts/tu-dominio/notas',
+            label: '¿En qué ruta absoluta de este servidor está (o estará) la carpeta de tus notas?',
+            placeholder: '/var/www/vhosts/tu-dominio/cerebro-personal',
             default: storage_path('app/brain'),
             required: true
         );
