@@ -3,61 +3,80 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\note;
+use function Laravel\Prompts\confirm;
 
 class OpenMetisInstall extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'openmetis:install';
+    protected $description = 'Instalador interactivo del ecosistema OpenMetis AI';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Instalador automático del ecosistema OpenMetis AI';
-
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
-        $this->info('🧠 Iniciando instalador de OpenMetis AI...');
+        info('🧠 Bienvenido al instalador de OpenMetis AI');
 
         // 1. Verificar y copiar .env
         if (!file_exists(base_path('.env'))) {
-            $this->warn('No se encontró archivo .env. Copiando .env.example...');
+            note('Creando archivo .env desde .env.example...');
             copy(base_path('.env.example'), base_path('.env'));
-            $this->call('key:generate');
-            $this->info('.env configurado correctamente.');
+            $this->callQuietly('key:generate');
         }
 
-        // 2. Crear SQLite si no existe
+        // 2. Configurar Variables interactivamente
+        $envContent = file_get_contents(base_path('.env'));
+
+        $token = text(
+            label: 'Define un Token de seguridad para la API (n8n usará este token)',
+            placeholder: 'Ej: mi-token-super-secreto',
+            default: Str::random(32),
+            required: true
+        );
+
+        $brainPath = text(
+            label: '¿En qué ruta absoluta de este servidor guardarás tus notas (Markdown)?',
+            placeholder: '/var/www/vhosts/tu-dominio/notas',
+            default: storage_path('app/brain'),
+            required: true
+        );
+        
+        if (!file_exists($brainPath)) {
+            if (confirm('La carpeta no existe. ¿Quieres que la cree por ti?', default: true)) {
+                mkdir($brainPath, 0755, true);
+                note('Carpeta creada: ' . $brainPath);
+            }
+        }
+
+        // Reemplazar o añadir en el .env
+        $envContent = preg_replace('/^API_BEARER_TOKEN=.*$/m', 'API_BEARER_TOKEN="' . $token . '"', $envContent);
+        $envContent = preg_replace('/^BRAIN_PATH=.*$/m', 'BRAIN_PATH="' . $brainPath . '"', $envContent);
+        file_put_contents(base_path('.env'), $envContent);
+
+        // 3. Crear SQLite si no existe
         $dbPath = database_path('database.sqlite');
         if (!file_exists($dbPath)) {
-            $this->warn('Base de datos no encontrada. Creando base de datos SQLite...');
             touch($dbPath);
         }
 
-        // 3. Ejecutar migraciones
-        $this->info('Ejecutando migraciones de base de datos...');
-        $this->call('migrate', ['--force' => true]);
+        // 4. Ejecutar migraciones
+        note('Preparando la base de datos...');
+        $this->callQuietly('migrate', ['--force' => true]);
 
-        // 4. Limpiar cachés
-        $this->info('Limpiando y optimizando cachés...');
-        $this->call('optimize:clear');
+        // 5. Limpiar cachés
+        note('Optimizando aplicación...');
+        $this->callQuietly('optimize:clear');
 
-        // 5. Advertencia sobre assets (NPM)
-        $this->info('🎨 Las dependencias de base de datos y backend están listas.');
+        info('✅ ¡OpenMetis AI se ha instalado y configurado con éxito!');
+
+        note('Pasos siguientes para conectar tu IA (n8n y Telegram):');
+        $this->line("1. Importa el archivo <fg=cyan>n8n_template.json</> en tu n8n.");
+        $this->line("2. En n8n, usa este API Token que acabas de configurar: <fg=green>$token</>");
+        $this->line("3. Crea un bot en Telegram hablando con <fg=yellow>@BotFather</> y pon sus credenciales en el nodo de Telegram en n8n.");
+        
         if (!file_exists(public_path('build'))) {
-            $this->warn('Parece que los assets frontend (Tailwind/Livewire) no están compilados.');
-            $this->line('Por favor, asegúrate de ejecutar:');
-            $this->line('  <fg=yellow>npm install && npm run build</>');
+            $this->line("\n⚠️ <fg=yellow>Nota:</> Falta compilar el panel visual. Ejecuta <fg=cyan>npm install && npm run build</> si no lo has hecho.");
         }
-
-        $this->info("\n✅ ¡OpenMetis AI se ha instalado con éxito! Ya puedes acceder a tu panel.");
     }
 }
