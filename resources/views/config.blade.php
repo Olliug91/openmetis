@@ -59,5 +59,20 @@
                 </li>
             </ol>
         </div>
+
+        <div class="bg-white rounded-lg shadow p-6 mb-6 border-l-4 border-orange-500">
+            <h3 class="text-xl font-semibold mb-2 text-gray-700">⚡ ¿Qué es Groq y por qué lo usamos?</h3>
+            <p class="text-sm text-gray-600 mb-3">
+                <strong>Groq</strong> es un proveedor de Inteligencia Artificial que procesa datos a una velocidad asombrosa. 
+                En OpenMetis utilizamos su modelo <em>Whisper</em> para <strong>transcribir tus audios de Telegram a texto casi en tiempo real</strong> y sin coste.
+            </p>
+            <div class="bg-orange-50 rounded p-4 text-sm text-gray-800">
+                <ol class="list-decimal list-inside space-y-2">
+                    <li>Entra en <a href="https://console.groq.com" target="_blank" class="text-orange-600 font-bold hover:underline">console.groq.com</a> y regístrate gratis.</li>
+                    <li>Ve a la sección <strong>API Keys</strong> y crea una nueva clave.</li>
+                    <li>Pégala en n8n. Puedes hacerlo directamente en el nodo de <em>Groq Whisper</em> (en la cabecera <code>Authorization</code> poniendo <code>Bearer TU_CLAVE</code>), o usando la variable de entorno <code>GROQ_API_KEY</code>.</li>
+                </ol>
+            </div>
+        </div>
     </div>
 </x-layouts.app>
