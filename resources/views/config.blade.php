@@ -34,7 +34,13 @@
                     Guarda el <strong>Bot Token</strong> que te devolverá al final.
                 </li>
                 <li>
-                    <strong>Importa el Agente en n8n:</strong> En tu n8n, importa el archivo <code class="bg-gray-100 px-1 py-0.5 rounded text-pink-600">n8n_template.json</code> que está en la raíz de este proyecto.
+                    <strong>Importa el Agente en n8n:</strong> En tu n8n, importa la plantilla preconfigurada para que tu Cerebro cobre vida.
+                    <div class="mt-2 mb-1">
+                        <a href="{{ route('download.template') }}" class="inline-flex items-center px-3 py-1.5 bg-pink-100 text-pink-700 hover:bg-pink-200 hover:text-pink-800 text-xs font-bold rounded shadow-sm transition">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Descargar n8n_template.json
+                        </a>
+                    </div>
                 </li>
                 <li>
                     <strong>Configura las Credenciales en n8n:</strong>

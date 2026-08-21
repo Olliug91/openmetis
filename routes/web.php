@@ -31,4 +31,8 @@ Route::middleware([\App\Http\Middleware\ProtectDashboard::class])->group(functio
     Route::get('/config', function () {
         return view('config');
     })->name('config');
+
+    Route::get('/download-template', function () {
+        return response()->download(base_path('n8n_template.json'), 'OpenMetis_Agent.json');
+    })->name('download.template');
 });
