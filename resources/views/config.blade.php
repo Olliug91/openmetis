@@ -29,9 +29,9 @@
                     <p class="text-xs text-gray-500 mt-1">Este token lo usa n8n para autenticarse contra este panel.</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Ruta del Repositorio Local (Markdown)</label>
+                    <label class="block text-sm font-medium text-gray-700">Ruta del Cerebro (.md)</label>
                     <input type="text" name="brain_path" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" value="{{ env('BRAIN_PATH', config('app.brain_path', '/Users/usuario/repo')) }}" required>
-                    <p class="text-xs text-gray-500 mt-1">Ruta absoluta donde se leen y escriben tus notas.</p>
+                    <p class="text-xs text-gray-500 mt-1">Ruta absoluta de la carpeta donde se leen y escriben tus notas.</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Contraseña Maestra (Panel Visual)</label>
