@@ -60,7 +60,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ $('Set Texto de Groq').first() ? $('Set Texto de Groq').first().json.text : $('Set Texto Original').first().json.text }}",
+        "text": "={{ $('Set Texto de Groq').isExecuted ? $('Set Texto de Groq').first().json.text : $('Set Texto Original').first().json.text }}",
         "options": {
           "systemMessage": "={{ $json.system_prompt }}\n\"No uses formato markdown, ni negritas, ni asteriscos en tus respuestas. Responde en texto plano.\""
         }
