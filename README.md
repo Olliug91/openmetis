@@ -15,13 +15,11 @@ Un ecosistema Open Source para construir tu propio "Cerebro Personal" (memoria y
    git clone https://github.com/tu-usuario/cerebro-api.git
    cd cerebro-api
    ```
-2. Instala las dependencias y prepara el entorno:
+2. Instala las dependencias y lanza el autoinstalador:
    ```bash
    composer install
-   cp .env.example .env
-   php artisan key:generate
-   touch database/database.sqlite
-   php artisan migrate
+   php artisan openbrain:install
+   npm install && npm run build
    ```
 3. Levanta el servidor (o usa [Laravel Herd](https://herd.laravel.com/)):
    ```bash
