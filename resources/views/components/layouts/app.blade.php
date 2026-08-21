@@ -15,8 +15,8 @@
             <!-- Sidebar -->
             <div class="bg-slate-800 text-white w-64 flex-shrink-0">
                 <div class="p-6">
-                    <h1 class="text-2xl font-bold tracking-wider">🧠 OpenBrain</h1>
-                    <p class="text-slate-400 text-sm mt-1">Cerebro API</p>
+                    <h1 class="text-2xl font-bold tracking-wider">🧠 OpenMetis</h1>
+                    <p class="text-slate-400 text-sm mt-1">AI Assistant</p>
                 </div>
                 <nav class="mt-6">
                     <a href="/" class="block py-3 px-6 text-slate-200 hover:bg-slate-700 hover:text-white transition">Dashboard</a>

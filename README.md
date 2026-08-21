@@ -1,4 +1,4 @@
-# 🧠 OpenBrain (Cerebro API)
+# 🧠 OpenMetis AI (Cerebro API)
 
 Un ecosistema Open Source para construir tu propio "Cerebro Personal" (memoria y gestión de tareas). Integra transcripción de voz ultrarrápida (vía Telegram + Groq), inyección de contexto dinámico (vía esta API en Laravel) y ejecución de acciones mediante IA (agentes de n8n).
 
@@ -18,7 +18,7 @@ Un ecosistema Open Source para construir tu propio "Cerebro Personal" (memoria y
 2. Instala las dependencias y lanza el autoinstalador:
    ```bash
    composer install
-   php artisan openbrain:install
+   php artisan openmetis:install
    npm install && npm run build
    ```
 3. Levanta el servidor (o usa [Laravel Herd](https://herd.laravel.com/)):

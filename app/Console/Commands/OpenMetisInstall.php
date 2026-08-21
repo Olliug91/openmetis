@@ -4,28 +4,28 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class OpenBrainInstall extends Command
+class OpenMetisInstall extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'openbrain:install';
+    protected $signature = 'openmetis:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Instalador automático del ecosistema OpenBrain';
+    protected $description = 'Instalador automático del ecosistema OpenMetis AI';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $this->info('🧠 Iniciando instalador de OpenBrain...');
+        $this->info('🧠 Iniciando instalador de OpenMetis AI...');
 
         // 1. Verificar y copiar .env
         if (!file_exists(base_path('.env'))) {
@@ -58,6 +58,6 @@ class OpenBrainInstall extends Command
             $this->line('  <fg=yellow>npm install && npm run build</>');
         }
 
-        $this->info("\n✅ ¡OpenBrain se ha instalado con éxito! Ya puedes acceder a tu panel.");
+        $this->info("\n✅ ¡OpenMetis AI se ha instalado con éxito! Ya puedes acceder a tu panel.");
     }
 }
