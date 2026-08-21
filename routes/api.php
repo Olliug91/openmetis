@@ -67,3 +67,12 @@ Route::get('/ufc', function (Request $request) {
     
     return response($output)->header('Content-Type', 'text/plain');
 });
+
+use App\Http\Controllers\ContextController;
+
+Route::middleware('api.token')->group(function () {
+    Route::get('/context/read', [ContextController::class, 'read']);
+    // Route::get('/context/search', [ContextController::class, 'search']); // TODO
+    Route::post('/context/update', [ContextController::class, 'update']);
+    Route::post('/system/sync', [ContextController::class, 'sync']);
+});

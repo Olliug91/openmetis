@@ -1,0 +1,419 @@
+{
+  "name": "OpenBrain - AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": ["message"],
+        "additionalFields": {}
+      },
+      "id": "a6a66f3b-30dd-40e5-9427-11d584f84cb5",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [-1200, 640]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.API_URL }}/api/context/read",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.API_BEARER_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bf0a21b8-bf68-4458-a646-0e0991f3ff9f",
+      "name": "Obtener Contexto (Laravel)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [-500, 900]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $node[\"Telegram Trigger\"].json.message.chat.id }}",
+        "text": "={{ $json.output}}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "0587a26e-be8e-4953-bf3d-895aec61bd76",
+      "name": "Responder por Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [140, 900]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.6-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [-380, 1160],
+      "id": "949175b9-0d8a-406b-b106-890d9b48d01c",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Set Texto de Groq').first() ? $('Set Texto de Groq').first().json.text : $('Set Texto Original').first().json.text }}",
+        "options": {
+          "systemMessage": "={{ $json.system_prompt }}\n\"No uses formato markdown, ni negritas, ni asteriscos en tus respuestas. Responde en texto plano.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [-300, 900],
+      "id": "fb8646e0-f0ec-4022-9209-407df9643807",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [-160, 1160],
+      "id": "970f7b4a-1564-4302-8246-d000c95afd42",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Guarda notas, tareas o ideas en el cerebro personal (Markdown).",
+        "method": "POST",
+        "url": "={{ $env.API_URL }}/api/context/update",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.API_BEARER_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"file\": \"{{ $parameter.file }}\",\n  \"content\": \"{{ $parameter.content }}\",\n  \"append\": {{ $parameter.append }}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [-40, 1120],
+      "id": "tool-update-brain",
+      "name": "Guardar Nota"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Sincroniza los cambios locales del cerebro hacia el repositorio de GitHub.",
+        "method": "POST",
+        "url": "={{ $env.API_URL }}/api/system/sync",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.API_BEARER_TOKEN }}"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [-40, 1280],
+      "id": "tool-sync-git",
+      "name": "Sincronizar Git"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id}}"
+      },
+      "id": "5db22802-2214-40a2-8be2-9aed43a09cf6",
+      "name": "Descargar Audio",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [-720, 320]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/audio/transcriptions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.GROQ_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "whisper-large-v3"
+            },
+            {
+              "name": "language",
+              "value": "es"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7689f40c-8790-4860-9b78-f797eafa0680",
+      "name": "Groq Whisper",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [-340, 340]
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "text",
+              "stringValue": "={{ $json.text }}"
+            }
+          ]
+        },
+        "include": "none",
+        "options": {}
+      },
+      "id": "8ab4850d-dc06-446b-a54c-3d4b48db618c",
+      "name": "Set Texto de Groq",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [-120, 340]
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "text",
+              "stringValue": "={{ $json.message.text }}"
+            }
+          ]
+        },
+        "include": "none",
+        "options": {}
+      },
+      "id": "ed220744-7941-4c47-87ac-fe9f5a0b45b5",
+      "name": "Set Texto Original",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [-880, 960]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9ad1ab0b-7d69-40d3-b9e9-8958489ef78f",
+              "leftValue": "={{ $json.message.voice.file_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-960, 640],
+      "id": "7e504e8c-e2e3-4556-ab86-12922a30b658",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items[0].binary && items[0].binary.data) {\n  items[0].binary.data.fileName = 'nota_voz.ogg';\n  items[0].binary.data.mimeType = 'audio/ogg';\n}\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-520, 320],
+      "id": "6f80a1ef-4200-44db-893f-4affe5049c46",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Descargar Audio": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Whisper": {
+      "main": [
+        [
+          {
+            "node": "Set Texto de Groq",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Texto de Groq": {
+      "main": [
+        [
+          {
+            "node": "Obtener Contexto (Laravel)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Texto Original": {
+      "main": [
+        [
+          {
+            "node": "Obtener Contexto (Laravel)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Contexto (Laravel)": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Responder por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Nota": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sincronizar Git": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Descargar Audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Texto Original",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Groq Whisper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

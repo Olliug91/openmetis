@@ -123,4 +123,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'api_bearer_token' => env('API_BEARER_TOKEN'),
+    'brain_path' => env('BRAIN_PATH', storage_path('app/brain')),
+
 ];

@@ -1,58 +1,44 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🧠 OpenBrain (Cerebro API)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Un ecosistema Open Source para construir tu propio "Cerebro Personal" (memoria y gestión de tareas). Integra transcripción de voz ultrarrápida (vía Telegram + Groq), inyección de contexto dinámico (vía esta API en Laravel) y ejecución de acciones mediante IA (agentes de n8n).
 
-## About Laravel
+## 🚀 Características
+- **Panel de Control UI:** Configura fácilmente tus credenciales de API, rutas locales y estado de Git mediante una interfaz limpia hecha con Livewire 3 y TailwindCSS.
+- **Autocontrolado:** Tus datos se guardan en archivos Markdown locales. Tú eres dueño de tu privacidad. Sin costosas suscripciones mensuales de bases de datos vectoriales.
+- **Microservicio API:** Permite a n8n leer el contexto, crear/actualizar notas y disparar sincronizaciones con GitHub.
+- **Basado en SQLite:** No hace falta configurar MariaDB ni MySQL. Clona y ejecuta al instante.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🛠️ Instalación rápida
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/tu-usuario/cerebro-api.git
+   cd cerebro-api
+   ```
+2. Instala las dependencias y prepara el entorno:
+   ```bash
+   composer install
+   cp .env.example .env
+   php artisan key:generate
+   touch database/database.sqlite
+   php artisan migrate
+   ```
+3. Levanta el servidor (o usa [Laravel Herd](https://herd.laravel.com/)):
+   ```bash
+   php artisan serve
+   ```
+4. Entra al Panel de Control (ej. `http://localhost:8000`) y ajusta tu token de API y la ruta local de tu carpeta de cerebro (archivos Markdown).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🤖 Integración con n8n
+En la raíz de este proyecto encontrarás el archivo `n8n_template.json`. Impórtalo en tu instancia de n8n.
+Ese Workflow ya está preparado para:
+- Recibir notas de voz desde Telegram.
+- Transcribir con Groq Whisper.
+- Leer tu contexto personal a través de los endpoints de Laravel.
+- **[NUEVO]** Usar Tools para guardar notas o ideas (llama a `/api/context/update`).
+- **[NUEVO]** Sincronizar automáticamente hacia GitHub (llama a `/api/system/sync`).
 
-## Learning Laravel
+Recuerda configurar en n8n las variables de entorno `API_URL` (la URL de este proyecto Laravel) y `API_BEARER_TOKEN` (el token que definas en tu panel de control).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📜 Licencia
+Open Source - MIT. ¡Úsalo y modifícalo como quieras!
