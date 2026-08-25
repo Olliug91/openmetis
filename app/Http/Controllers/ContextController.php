@@ -29,11 +29,19 @@ class ContextController extends Controller
 
     public function update(Request $request)
     {
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'file' => 'required|string',
             'content' => 'required|string',
             'append' => 'boolean'
         ]);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => 'Validation failed',
+                'data_received' => $request->all(),
+                'validation_errors' => $validator->errors()
+            ], 422);
+        }
         
         $filePath = $this->getBrainPath() . '/' . ltrim($request->file, '/');
         $directory = dirname($filePath);
