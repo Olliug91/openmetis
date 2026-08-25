@@ -57,6 +57,11 @@
                             <p class="text-xs text-gray-500 mt-1">Token usado por n8n para autenticarse contra esta API.</p>
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-gray-700">GitHub Personal Access Token (Opcional)</label>
+                            <input type="password" name="github_pat" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-red-500 focus:border-red-500 font-mono text-sm" value="{{ config('openmetis.github_pat') }}">
+                            <p class="text-xs text-gray-500 mt-1">Permite a OpenMetis hacer 'git push' automáticamente desde el VPS.</p>
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700">GitHub Webhook Secret (Opcional)</label>
                             <input type="text" name="github_webhook_secret" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-red-500 focus:border-red-500 font-mono text-sm" value="{{ config('openmetis.github_webhook_secret') }}">
                             <p class="text-xs text-gray-500 mt-1">Si configuras un webhook en Github hacia `/api/deploy`, pon aquí el secret.</p>

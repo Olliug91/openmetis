@@ -56,21 +56,47 @@ class ContextController extends Controller
 
     public function sync(Request $request)
     {
-        $scriptPath = $this->getBrainPath() . '/scripts/sync-to-github.sh';
+        $brainPath = $this->getBrainPath();
         
-        if (!File::exists($scriptPath)) {
-            return response()->json(['error' => 'Script de sync no encontrado'], 404);
+        if (!File::exists($brainPath . '/.git')) {
+            return response()->json(['error' => 'No es un repositorio git'], 400);
         }
         
-        // En un entorno real se ejecutaría con exec() o process, 
-        // asumiendo permisos correctos.
+        $pat = config('openmetis.github_pat');
+        
         $output = [];
         $returnVar = 0;
-        exec("bash " . escapeshellarg($scriptPath) . " 2>&1", $output, $returnVar);
+        
+        // 1. Añadir cambios y hacer commit
+        $commitCmd = "cd {$brainPath} && git config user.name 'OpenMetis AI' && git config user.email 'bot@openmetis.local' && git add . && git commit -m 'Auto-save desde OpenMetis AI' 2>&1";
+        exec($commitCmd, $output, $returnVar);
+        
+        // Si no hay cambios que hacer commit (returnVar = 1), no es un error crítico
+        
+        // 2. Hacer Push
+        $pushCmd = "cd {$brainPath} && ";
+        if (!empty($pat)) {
+            // Obtener la URL remota actual
+            $remoteUrl = trim(shell_exec("cd {$brainPath} && git config --get remote.origin.url"));
+            // Reemplazar la URL para inyectar el PAT temporalmente para este push
+            if (str_starts_with($remoteUrl, 'https://')) {
+                // Quitar credenciales si ya las tiene y poner el PAT
+                $cleanUrl = preg_replace('/https:\/\/[^@]+@/', 'https://', $remoteUrl);
+                $patUrl = str_replace('https://', "https://{$pat}@", $cleanUrl);
+                $pushCmd .= "git push " . escapeshellarg($patUrl) . " main 2>&1";
+            } else {
+                $pushCmd .= "git push origin main 2>&1";
+            }
+        } else {
+            $pushCmd .= "git push origin main 2>&1";
+        }
+        
+        exec($pushCmd, $pushOutput, $pushReturnVar);
+        $output = array_merge($output, $pushOutput);
         
         return response()->json([
-            'success' => $returnVar === 0,
+            'success' => $pushReturnVar === 0,
             'output' => implode("\n", $output)
-        ], $returnVar === 0 ? 200 : 500);
+        ], $pushReturnVar === 0 ? 200 : 500);
     }
 }

@@ -67,6 +67,7 @@ Route::middleware([\App\Http\Middleware\ProtectDashboard::class])->group(functio
             'excluded_files' => 'nullable|string',
             'system_prompt' => 'required|string',
             'github_webhook_secret' => 'nullable|string',
+            'github_pat' => 'nullable|string',
         ]);
 
         $envFile = base_path('.env');
@@ -80,6 +81,7 @@ Route::middleware([\App\Http\Middleware\ProtectDashboard::class])->group(functio
             'BRAIN_EXCLUDED_FILES' => $request->excluded_files ?? '',
             'SYSTEM_PROMPT' => str_replace(["\r", "\n"], ['\r', '\n'], $request->system_prompt),
             'GITHUB_WEBHOOK_SECRET' => $request->github_webhook_secret ?? '',
+            'GITHUB_PAT' => $request->github_pat ?? '',
         ];
 
         foreach ($updates as $key => $val) {
