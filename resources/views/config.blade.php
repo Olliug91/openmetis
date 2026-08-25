@@ -66,6 +66,15 @@
                             <input type="text" name="github_webhook_secret" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-red-500 focus:border-red-500 font-mono text-sm" value="{{ config('openmetis.github_webhook_secret') }}">
                             <p class="text-xs text-gray-500 mt-1">Si configuras un webhook en Github hacia `/api/deploy`, pon aquí el secret.</p>
                         </div>
+                        
+                        <div class="pt-4 mt-4 border-t border-gray-100">
+                            <h4 class="text-sm font-semibold text-gray-800 mb-2">Plantilla de n8n</h4>
+                            <p class="text-xs text-gray-600 mb-3">Descarga el workflow base con todas las herramientas pre-configuradas (incluyendo "Guardar Nota").</p>
+                            <a href="{{ route('download.template') }}" class="inline-flex items-center px-4 py-2 bg-pink-100 text-pink-700 hover:bg-pink-200 hover:text-pink-800 text-sm font-bold rounded-lg shadow-sm transition">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Descargar Workflow
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
