@@ -9,7 +9,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/context', function () {
-    $cerebroPath = storage_path('app/cerebro');
+    $cerebroPath = rtrim(config('app.brain_path', storage_path('app/cerebro')), '/');
     
     if (!File::exists($cerebroPath)) {
         return response()->json(['system_prompt' => '']);
@@ -44,7 +44,7 @@ Route::post('/deploy', function (Request $request) {
     // Aquí puedes añadir validación de un secret token de GitHub si lo deseas
     // if ($request->header('X-Hub-Signature-256') !== ...) { ... }
 
-    $path = storage_path('app/cerebro');
+    $path = rtrim(config('app.brain_path', storage_path('app/cerebro')), '/');
     
     // Si la carpeta es un repositorio git, hacemos pull seguro
     if (File::exists($path . '/.git')) {
@@ -61,8 +61,8 @@ Route::get('/ufc', function (Request $request) {
     if (!$fighter) {
         return response()->json(['error' => 'Fighter name required'], 400);
     }
-    
-    $scriptPath = storage_path('app/cerebro/scripts/consultar_ufc.py');
+    $brainPath = rtrim(config('app.brain_path', storage_path('app/cerebro')), '/');
+    $scriptPath = $brainPath . '/scripts/consultar_ufc.py';
     $command = "python3 " . escapeshellarg($scriptPath) . " " . escapeshellarg($fighter);
     $output = shell_exec($command);
     
