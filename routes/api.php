@@ -46,9 +46,10 @@ Route::post('/deploy', function (Request $request) {
 
     $path = storage_path('app/cerebro');
     
-    // Si la carpeta es un repositorio git, hacemos pull
+    // Si la carpeta es un repositorio git, hacemos pull seguro
     if (File::exists($path . '/.git')) {
-        $output = shell_exec("cd {$path} && git pull origin main 2>&1");
+        $cmd = "cd {$path} && git add . && git commit -m 'Auto-save VPS' || true && git pull --rebase origin main 2>&1";
+        $output = shell_exec($cmd);
         return response()->json(['status' => 'success', 'output' => $output]);
     }
 

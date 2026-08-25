@@ -48,7 +48,10 @@ class ContextController extends Controller
             File::put($filePath, $request->content);
         }
         
-        return response()->json(['success' => true, 'message' => 'Archivo actualizado']);
+        // Auto-sincronizar después de guardar para que no haya desincronización
+        $this->sync(new Request());
+        
+        return response()->json(['success' => true, 'message' => 'Archivo actualizado y sincronizado']);
     }
 
     public function sync(Request $request)
