@@ -63,6 +63,10 @@ Route::middleware([\App\Http\Middleware\ProtectDashboard::class])->group(functio
             'api_bearer_token' => 'required|string',
             'brain_path' => 'required|string',
             'dashboard_password' => 'required|string',
+            'allowed_extensions' => 'required|string',
+            'excluded_files' => 'nullable|string',
+            'system_prompt' => 'required|string',
+            'github_webhook_secret' => 'nullable|string',
         ]);
 
         $envFile = base_path('.env');
@@ -72,6 +76,10 @@ Route::middleware([\App\Http\Middleware\ProtectDashboard::class])->group(functio
             'API_BEARER_TOKEN' => $request->api_bearer_token,
             'BRAIN_PATH' => rtrim($request->brain_path, '/'),
             'DASHBOARD_PASSWORD' => $request->dashboard_password,
+            'BRAIN_ALLOWED_EXTENSIONS' => $request->allowed_extensions,
+            'BRAIN_EXCLUDED_FILES' => $request->excluded_files ?? '',
+            'SYSTEM_PROMPT' => str_replace(["\r", "\n"], ['\r', '\n'], $request->system_prompt),
+            'GITHUB_WEBHOOK_SECRET' => $request->github_webhook_secret ?? '',
         ];
 
         foreach ($updates as $key => $val) {

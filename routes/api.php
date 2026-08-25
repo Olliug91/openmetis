@@ -15,20 +15,31 @@ Route::get('/context', function () {
         return response()->json(['system_prompt' => '']);
     }
 
-    $prompt = "Eres el asistente personal 'Cerebro de Bolsillo'. Utiliza el siguiente contexto personal para responder a las preguntas del usuario:\n\n";
+    $prompt = config('openmetis.system_prompt');
 
     $files = File::allFiles($cerebroPath);
+    
+    $allowedExtensions = array_map('trim', explode(',', config('openmetis.allowed_extensions')));
+    $excludedFiles = array_map('trim', explode(',', config('openmetis.excluded_files')));
     
     foreach ($files as $file) {
         $filename = $file->getFilename();
         $extension = $file->getExtension();
         
-        // Ignorar los JSON gigantes de la UFC y el backup de n8n para no saturar los tokens
-        if (str_starts_with($filename, 'ufc_') || $filename === 'n8n_nexus_workflow.json') {
+        // Comprobar si el archivo está en la lista de exclusiones (por nombre exacto o prefijo)
+        $isExcluded = false;
+        foreach ($excludedFiles as $excluded) {
+            if (!empty($excluded) && str_starts_with($filename, $excluded)) {
+                $isExcluded = true;
+                break;
+            }
+        }
+        
+        if ($isExcluded) {
             continue;
         }
 
-        if (in_array($extension, ['md', 'json'])) {
+        if (in_array($extension, $allowedExtensions)) {
             $prompt .= "--- Inicio de archivo: " . $filename . " ---\n";
             $prompt .= file_get_contents($file->getPathname()) . "\n";
             $prompt .= "--- Fin de archivo ---\n\n";
@@ -41,8 +52,14 @@ Route::get('/context', function () {
 });
 
 Route::post('/deploy', function (Request $request) {
-    // Aquí puedes añadir validación de un secret token de GitHub si lo deseas
-    // if ($request->header('X-Hub-Signature-256') !== ...) { ... }
+    $secret = config('openmetis.github_webhook_secret');
+    if (!empty($secret)) {
+        $signature = $request->header('X-Hub-Signature-256');
+        $hash = 'sha256=' . hash_hmac('sha256', $request->getContent(), $secret);
+        if (!hash_equals($hash, $signature ?? '')) {
+            return response()->json(['error' => 'Invalid signature'], 403);
+        }
+    }
 
     $path = rtrim(config('app.brain_path', storage_path('app/cerebro')), '/');
     
