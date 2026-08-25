@@ -28,6 +28,32 @@ Route::middleware([\App\Http\Middleware\ProtectDashboard::class])->group(functio
         return view('dashboard');
     })->name('dashboard');
 
+    Route::get('/archivos', function () {
+        $path = rtrim(config('app.brain_path', storage_path('app/cerebro')), '/');
+        
+        $files = [];
+        if (\Illuminate\Support\Facades\File::exists($path)) {
+            $allFiles = \Illuminate\Support\Facades\File::allFiles($path);
+            foreach ($allFiles as $f) {
+                if (str_contains($f->getPathname(), '/.git/')) continue;
+                $files[] = [
+                    'name' => $f->getRelativePathname(),
+                    'size' => round($f->getSize() / 1024, 2) . ' KB',
+                    'updated_at' => date('d/m/Y H:i:s', $f->getMTime()),
+                ];
+            }
+        }
+        
+        $gitStatus = 'No es un repositorio git.';
+        $gitLog = '';
+        if (\Illuminate\Support\Facades\File::exists($path . '/.git')) {
+            $gitStatus = shell_exec("cd {$path} && git status -s 2>&1") ?: 'Todo sincronizado (working tree clean)';
+            $gitLog = shell_exec("cd {$path} && git log -1 --pretty=format:'%h - %s (%cr)' 2>&1");
+        }
+
+        return view('archivos', compact('files', 'gitStatus', 'gitLog', 'path'));
+    })->name('archivos');
+
     Route::get('/config', function () {
         return view('config');
     })->name('config');
