@@ -54,6 +54,25 @@ Route::middleware([\App\Http\Middleware\ProtectDashboard::class])->group(functio
         return view('archivos', compact('files', 'gitStatus', 'gitLog', 'path'));
     })->name('archivos');
 
+    Route::get('/archivos/ver', function (\Illuminate\Http\Request $request) {
+        $path = rtrim(config('app.brain_path', storage_path('app/cerebro')), '/');
+        $file = $request->query('file');
+        
+        if (!$file || str_contains($file, '../')) {
+            return abort(404);
+        }
+        
+        $fullPath = $path . '/' . ltrim($file, '/');
+        
+        if (!\Illuminate\Support\Facades\File::exists($fullPath) || is_dir($fullPath)) {
+            return abort(404, 'Archivo no encontrado');
+        }
+        
+        $content = file_get_contents($fullPath);
+        
+        return view('ver_archivo', compact('file', 'content'));
+    })->name('archivos.ver');
+
     Route::get('/config', function () {
         return view('config');
     })->name('config');
