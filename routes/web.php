@@ -25,7 +25,31 @@ Route::get('/logout', function () {
 
 Route::middleware([\App\Http\Middleware\ProtectDashboard::class])->group(function () {
     Route::get('/', function () {
-        return view('dashboard');
+        $path = rtrim(config('app.brain_path', storage_path('app/cerebro')), '/');
+        
+        $fileCount = 0;
+        $recentFiles = [];
+        if (\Illuminate\Support\Facades\File::exists($path)) {
+            $allFiles = \Illuminate\Support\Facades\File::allFiles($path);
+            foreach ($allFiles as $f) {
+                if (str_contains($f->getPathname(), '/.git/')) continue;
+                $fileCount++;
+                $recentFiles[] = [
+                    'name' => $f->getRelativePathname(),
+                    'time' => $f->getMTime()
+                ];
+            }
+            // Sort by time descending
+            usort($recentFiles, function($a, $b) { return $b['time'] <=> $a['time']; });
+            $recentFiles = array_slice($recentFiles, 0, 5); // top 5
+        }
+        
+        $gitLog = 'Sin historial git';
+        if (\Illuminate\Support\Facades\File::exists($path . '/.git')) {
+            $gitLog = shell_exec("cd {$path} && git log -1 --pretty=format:'%s (%cr)' 2>&1");
+        }
+
+        return view('dashboard', compact('fileCount', 'recentFiles', 'gitLog'));
     })->name('dashboard');
     
     Route::get('/docs', function () {
