@@ -99,7 +99,21 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"file\": \"{{ $parameter.file }}\",\n  \"content\": \"{{ $parameter.content }}\",\n  \"append\": {{ $parameter.append }}\n}"
+        "jsonBody": "{\n  \"file\": \"{file}\",\n  \"content\": \"{content}\",\n  \"append\": true\n}",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "file",
+              "description": "Nombre del archivo (ej: tareas-pendientes.md)",
+              "type": "string"
+            },
+            {
+              "name": "content",
+              "description": "El texto o tarea que hay que guardar",
+              "type": "string"
+            }
+          ]
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
       "typeVersion": 1.1,
