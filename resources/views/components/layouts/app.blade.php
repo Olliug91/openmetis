@@ -23,6 +23,7 @@
                         <a href="/" class="block py-3 px-6 text-slate-200 hover:bg-slate-700 hover:text-white transition">Dashboard</a>
                         <a href="/archivos" class="block py-3 px-6 text-slate-200 hover:bg-slate-700 hover:text-white transition">Explorador de Archivos</a>
                         <a href="/config" class="block py-3 px-6 text-slate-200 hover:bg-slate-700 hover:text-white transition">Configuración</a>
+                        <a href="/docs" class="block py-3 px-6 text-slate-200 hover:bg-slate-700 hover:text-white transition">Guía de Instalación</a>
                     </nav>
                 </div>
                 <div class="p-4">

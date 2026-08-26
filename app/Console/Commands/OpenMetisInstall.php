@@ -57,10 +57,23 @@ class OpenMetisInstall extends Command
             required: true
         );
         
+        $githubPat = text(
+            label: '¿Quieres auto-sincronizar los cambios con GitHub desde el servidor? (Pega tu Personal Access Token o déjalo vacío)',
+            placeholder: 'ghp_...',
+            default: ''
+        );
+        
         if (!file_exists($brainPath)) {
-            if (confirm('La carpeta no existe. ¿Quieres que la cree por ti?', default: true)) {
+            if (confirm('La carpeta no existe. ¿Quieres que la cree por ti con los archivos base del cerebro?', default: true)) {
                 mkdir($brainPath, 0755, true);
                 note('Carpeta creada: ' . $brainPath);
+                
+                // Copiar la plantilla base
+                $templatePath = base_path('brain-template');
+                if (file_exists($templatePath)) {
+                    \Illuminate\Support\Facades\File::copyDirectory($templatePath, $brainPath);
+                    note('Archivos base copiados al cerebro.');
+                }
             }
         }
 
@@ -72,6 +85,12 @@ class OpenMetisInstall extends Command
             $envContent = preg_replace('/^DASHBOARD_PASSWORD=.*$/m', 'DASHBOARD_PASSWORD="' . $password . '"', $envContent);
         } else {
             $envContent .= "\nDASHBOARD_PASSWORD=\"$password\"";
+        }
+        
+        if (str_contains($envContent, 'GITHUB_PAT=')) {
+            $envContent = preg_replace('/^GITHUB_PAT=.*$/m', 'GITHUB_PAT="' . $githubPat . '"', $envContent);
+        } else {
+            $envContent .= "\nGITHUB_PAT=\"$githubPat\"";
         }
         
         file_put_contents(base_path('.env'), $envContent);

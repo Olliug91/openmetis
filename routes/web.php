@@ -27,6 +27,10 @@ Route::middleware([\App\Http\Middleware\ProtectDashboard::class])->group(functio
     Route::get('/', function () {
         return view('dashboard');
     })->name('dashboard');
+    
+    Route::get('/docs', function () {
+        return view('docs');
+    })->name('docs');
 
     Route::get('/archivos', function () {
         $path = rtrim(config('app.brain_path', storage_path('app/cerebro')), '/');
