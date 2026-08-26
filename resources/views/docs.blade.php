@@ -39,13 +39,21 @@
 
         <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
             <div class="p-6 space-y-4">
-                <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">4. Conectar la IA (n8n + Telegram)</h2>
-                <ol class="list-decimal pl-5 text-gray-600 space-y-2">
-                    <li>En el menú de "API & Webhooks" de este panel, descarga la plantilla de n8n.</li>
-                    <li>Importa el archivo JSON en tu instancia de n8n.</li>
-                    <li>Ve a Telegram, busca a <code>@BotFather</code>, crea un bot nuevo y copia el HTTP API Token. Pégalo en el nodo azul de n8n.</li>
-                    <li>Abre el nodo verde (Groq) en n8n y ponle tu API Key de Groq (o usa el modelo de OpenAI si lo prefieres).</li>
-                    <li>Activa el Workflow en n8n. ¡Ya puedes hablar con tu cerebro desde Telegram!</li>
+                <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">4. Conectar la IA (n8n + Telegram + Groq)</h2>
+                <ol class="list-decimal pl-5 text-gray-600 space-y-3">
+                    <li>En el menú de "Configuración" de este panel, descarga la plantilla de n8n usando el botón rosa.</li>
+                    <li>Abre tu instancia de n8n, crea un Workflow nuevo e importa el archivo JSON.</li>
+                    <li><strong>Telegram:</strong> Ve a Telegram, busca a <code>@BotFather</code>, crea un bot nuevo y copia el HTTP API Token. Pégalo en el nodo azul de n8n (el Trigger).</li>
+                    <li><strong>Groq (El Motor de IA):</strong>
+                        <ul class="list-disc pl-5 mt-1 text-gray-500 space-y-1">
+                            <li>Ve a <a href="https://console.groq.com/keys" target="_blank" class="text-indigo-600 hover:underline">console.groq.com</a> y créate una cuenta gratuita.</li>
+                            <li>Genera una nueva <strong>API Key</strong> y cópiala.</li>
+                            <li>En n8n, abre el nodo verde (Groq Chat Model) y en <em>Credentials</em> añade una nueva credencial pegando tu clave.</li>
+                            <li>Asegúrate de tener seleccionado un modelo rápido y capaz en el nodo (por ejemplo, <code>llama-3.1-70b-versatile</code> o <code>mixtral-8x7b-32768</code>).</li>
+                            <li>Nota: El nodo de reconocimiento de voz (Whisper) también usa la misma API Key de Groq para transcribir tus audios a texto en milisegundos.</li>
+                        </ul>
+                    </li>
+                    <li>Activa el Workflow (ponlo en ON) en la esquina superior derecha. ¡Ya puedes hablar con tu cerebro por Telegram!</li>
                 </ol>
             </div>
         </div>
