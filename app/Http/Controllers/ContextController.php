@@ -37,10 +37,11 @@ class ContextController extends Controller
         
         if ($validator->fails()) {
             return response()->json([
-                'error' => 'Validation failed',
+                'success' => false,
+                'error' => 'Validation failed: Faltan parámetros (file o content).',
                 'data_received' => $request->all(),
                 'validation_errors' => $validator->errors()
-            ], 422);
+            ], 200);
         }
         
         $filePath = $this->getBrainPath() . '/' . ltrim($request->file, '/');
