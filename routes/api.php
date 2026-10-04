@@ -20,7 +20,9 @@ Route::get('/context', function () {
     $files = File::allFiles($cerebroPath);
     
     $allowedExtensions = array_map('trim', explode(',', config('openmetis.allowed_extensions', 'md,txt')));
-    $excludedFiles = array_map('trim', explode(',', config('openmetis.excluded_files', 'ufc_,n8n_,historico_,daw/,scripts/,proyectos/,.git/')));
+    $defaultExclusions = ['ufc_', 'n8n_', 'historico_', 'daw/', 'scripts/', 'proyectos/', '.git/'];
+    $envExclusions = array_map('trim', explode(',', config('openmetis.excluded_files', '')));
+    $excludedFiles = array_unique(array_filter(array_merge($defaultExclusions, $envExclusions)));
     
     foreach ($files as $file) {
         $relativePath = str_replace('\\', '/', $file->getRelativePathname());
