@@ -19,19 +19,24 @@ Route::get('/context', function () {
 
     $files = File::allFiles($cerebroPath);
     
-    $allowedExtensions = array_map('trim', explode(',', config('openmetis.allowed_extensions')));
-    $excludedFiles = array_map('trim', explode(',', config('openmetis.excluded_files')));
+    $allowedExtensions = array_map('trim', explode(',', config('openmetis.allowed_extensions', 'md,txt')));
+    $excludedFiles = array_map('trim', explode(',', config('openmetis.excluded_files', 'ufc_,n8n_,historico_,daw/,scripts/,proyectos/,.git/')));
     
     foreach ($files as $file) {
+        $relativePath = str_replace('\\', '/', $file->getRelativePathname());
         $filename = $file->getFilename();
         $extension = $file->getExtension();
         
-        // Comprobar si el archivo está en la lista de exclusiones (por nombre exacto o prefijo)
+        // Comprobar si el archivo está en la lista de exclusiones (por nombre exacto, prefijo o directorio)
         $isExcluded = false;
         foreach ($excludedFiles as $excluded) {
-            if (!empty($excluded) && str_starts_with($filename, $excluded)) {
-                $isExcluded = true;
-                break;
+            if (!empty($excluded)) {
+                if (str_starts_with($filename, $excluded) || 
+                    str_starts_with($relativePath, $excluded) || 
+                    str_contains($relativePath, '/' . rtrim($excluded, '/') . '/')) {
+                    $isExcluded = true;
+                    break;
+                }
             }
         }
         
@@ -39,8 +44,13 @@ Route::get('/context', function () {
             continue;
         }
 
+        // Límite de seguridad: nunca cargar archivos individuales > 100KB en el prompt base
+        if ($file->getSize() > 100000) {
+            continue;
+        }
+
         if (in_array($extension, $allowedExtensions)) {
-            $prompt .= "--- Inicio de archivo: " . $filename . " ---\n";
+            $prompt .= "--- Inicio de archivo: " . $relativePath . " ---\n";
             $prompt .= file_get_contents($file->getPathname()) . "\n";
             $prompt .= "--- Fin de archivo ---\n\n";
         }
@@ -84,6 +94,36 @@ Route::get('/ufc', function (Request $request) {
     $output = shell_exec($command);
     
     return response($output)->header('Content-Type', 'text/plain');
+});
+
+Route::get('/taekwondo', function (Request $request) {
+    $query = $request->query('query', '');
+    $brainPath = rtrim(config('app.brain_path', storage_path('app/cerebro')), '/');
+    $scriptPath = $brainPath . '/scripts/consultar_taekwondo.py';
+    
+    if (!File::exists($scriptPath)) {
+        return response("Script consultar_taekwondo.py no encontrado.", 404)->header('Content-Type', 'text/plain');
+    }
+    
+    $command = "python3 " . escapeshellarg($scriptPath) . " " . escapeshellarg($query);
+    $output = shell_exec($command);
+    
+    return response($output ?? 'Sin resultados')->header('Content-Type', 'text/plain');
+});
+
+Route::get('/daw', function (Request $request) {
+    $query = $request->query('query', '');
+    $brainPath = rtrim(config('app.brain_path', storage_path('app/cerebro')), '/');
+    $scriptPath = $brainPath . '/scripts/consultar_daw.py';
+    
+    if (!File::exists($scriptPath)) {
+        return response("Script consultar_daw.py no encontrado.", 404)->header('Content-Type', 'text/plain');
+    }
+    
+    $command = "python3 " . escapeshellarg($scriptPath) . " " . escapeshellarg($query);
+    $output = shell_exec($command);
+    
+    return response($output ?? 'Sin resultados')->header('Content-Type', 'text/plain');
 });
 
 use App\Http\Controllers\ContextController;
